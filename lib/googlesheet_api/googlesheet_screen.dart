@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:googlesheet_api_demo/googlesheet_api/googlesheet_controller.dart';
 import 'package:googlesheet_api_demo/googlesheet_api/user_model.dart';
 import 'package:googlesheet_api_demo/googlesheet_api/usersheetapi_class.dart';
+import 'package:googlesheet_api_demo/utils/routes.dart';
 
 class GoogleSheetScreen extends StatelessWidget {
   GoogleSheetScreen({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class GoogleSheetScreen extends StatelessWidget {
           children: [
             TextFormField(
               controller: _googleSheetController.idController,
+              readOnly: _googleSheetController.isEdit.value ? true : false,
               decoration: const InputDecoration(
                 labelText: 'id',
                 border: OutlineInputBorder(),
@@ -41,16 +43,77 @@ class GoogleSheetScreen extends StatelessWidget {
                 border: OutlineInputBorder(),
               ),
             ),
-            ElevatedButton(
-                onPressed: () async {
-                  User user = User(
-                      id: _googleSheetController.idController.text,
-                      name: _googleSheetController.nameController.text,
-                      email: _googleSheetController.emailController.text);
-                  await UserSheetApi.insert(user.toJson());
-                  _googleSheetController.clearData();
-                },
-                child: const Text("Save")),
+
+            /// getdata by specific rownumber
+            // Padding(
+            //   padding: EdgeInsets.symmetric(vertical: 10),
+            //   child: Row(
+            //     mainAxisSize: MainAxisSize.min,
+            //     children: [
+            //       Expanded(
+            //         flex: 4,
+            //         child: TextFormField(
+            //           controller: _googleSheetController.numberController,
+            //           decoration: const InputDecoration(
+            //             isDense: true,
+            //             labelText: 'Row Number',
+            //             border: OutlineInputBorder(),
+            //           ),
+            //         ),
+            //       ),
+            //       const SizedBox(
+            //         width: 10,
+            //       ),
+            //       Expanded(
+            //         flex: 2,
+            //         child: ElevatedButton(
+            //             onPressed: () async {
+            //               List<String>? list = await UserSheetApi.getData(
+            //                   int.parse(_googleSheetController
+            //                       .numberController.text));
+            //
+            //               _googleSheetController.idController.text = list![0];
+            //               _googleSheetController.nameController.text = list[1];
+            //               _googleSheetController.emailController.text = list[2];
+            //             },
+            //             child: const Text("Get by")),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    onPressed: () async {
+                      User user = User(
+                          id: _googleSheetController.idController.text,
+                          name: _googleSheetController.nameController.text,
+                          email: _googleSheetController.emailController.text);
+                      if (_googleSheetController.isEdit.value) {
+                        await UserSheetApi.update(
+                            _googleSheetController.idController.text,
+                            user.toJson());
+                      } else {
+                        await UserSheetApi.insert(user.toJson());
+                      }
+                      _googleSheetController.isEdit.value = false;
+                      _googleSheetController.clearData();
+                    },
+                    child: const Text("Save")),
+                const SizedBox(
+                  width: 10,
+                ),
+                ElevatedButton(
+                    onPressed: () async {
+                      _googleSheetController.userList?.value =
+                          await UserSheetApi.getAllData();
+                      print(_googleSheetController.userList);
+                      Get.toNamed(Routes.userDataScreen);
+                    },
+                    child: const Text("GetAll"))
+              ],
+            ),
           ],
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:googlesheet_api_demo/googlesheet_api/user_model.dart';
 import 'package:googlesheet_api_demo/googlesheet_api/userfiels_class.dart';
 import 'package:gsheets/gsheets.dart';
 
@@ -18,6 +19,7 @@ class UserSheetApi {
   static const sheetId = "1kjfprW2P5l3Zjw2TdsdmS1SCilSIZTZCikIq10K6HBM";
   static final gsheet = GSheets(credential);
   static Worksheet? worksheet;
+
   static Future<void> init() async {
     try {
       final spedsheet = await gsheet.spreadsheet(sheetId);
@@ -41,6 +43,65 @@ class UserSheetApi {
   static Future<void> insert(Map<String, dynamic> rowList) async {
     try {
       worksheet?.values.map.appendRow(rowList);
+    } catch (e) {
+      print("error in inser row==${e}");
+    }
+  }
+
+  static Future<void> delete(String id) async {
+    try {
+      int? index = await worksheet?.values.rowIndexOf(id);
+      if (index != null) {
+        if (index > 0) {
+          await worksheet?.deleteRow(index);
+        }
+      }
+    } catch (e) {
+      print('error in to delete');
+    }
+  }
+
+  /// get data by specific rowNumber
+  // static Future<List<String>?> getData(int rowNo) async {
+  //   try {
+  //     List<String>? list = await worksheet?.values.row(rowNo);
+  //     print(list);
+  //     return list;
+  //   } catch (e) {
+  //     print('error in getData---$e');
+  //   }
+  //   return null;
+  // }
+
+  static Future<List<User>> getAllData() async {
+    List<User> data = [];
+    try {
+      /// List<List<String>> this type data set into model
+      List<List<String>>? list = await worksheet?.values.allRows();
+      list?.removeAt(0);
+
+      if (list != null) {
+        for (int i = 0; i < list.length; i++) {
+          var row = list[i];
+          User user = User(id: row[0], name: row[1], email: row[2]);
+          data.add(user);
+        }
+      }
+      return data;
+    } catch (e) {
+      print('error in getData---$e');
+      return data;
+    }
+  }
+
+  static Future<void> update(String id, Map<String, dynamic> rowList) async {
+    try {
+      int? index = await worksheet?.values.rowIndexOf(id);
+      if (index != null) {
+        if (index > 0) {
+          worksheet?.values.map.insertRow(index, rowList);
+        }
+      }
     } catch (e) {
       print("error in inser row==${e}");
     }
