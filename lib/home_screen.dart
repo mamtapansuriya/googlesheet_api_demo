@@ -9,20 +9,23 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        title: Text("google Sheet Demo"),
-      ),
-      body: Center(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("GoogleSheet Demo"),
+        ),
+        body: Center(
           child: Column(
-        children: [
-          ElevatedButton(
-              onPressed: () {
-                Get.toNamed(Routes.googleApiScreen);
-              },
-              child: Text("Google Api"))
-        ],
-      )),
-    ));
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Get.toNamed(Routes.googleApiScreen);
+                  },
+                  child: const Text("Google Sheet"))
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:googlesheet_api_demo/page_indiacator/splash/splash_controller.dart';
 
 import 'googlesheet_api/usersheetapi_class.dart';
 import 'utils/routes.dart';
@@ -13,16 +14,24 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
+      initialBinding: AppBinding(),
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: Routes.homeScreen,
+      initialRoute: Routes.splashScreen,
       getPages: Routes.routes,
     );
+  }
+}
+
+class AppBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put(SplashController());
   }
 }

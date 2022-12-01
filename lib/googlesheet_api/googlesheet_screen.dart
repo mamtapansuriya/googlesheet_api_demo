@@ -12,111 +12,86 @@ class GoogleSheetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFormField(
-              controller: _googleSheetController.idController,
-              readOnly: _googleSheetController.isEdit.value ? true : false,
-              decoration: const InputDecoration(
-                labelText: 'id',
-                border: OutlineInputBorder(),
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Obx(
+                () => TextFormField(
+                  controller: _googleSheetController.idController,
+                  readOnly: _googleSheetController.isEdit.value ? true : false,
+                  decoration: const InputDecoration(
+                    labelText: 'id',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
-              child: TextFormField(
-                controller: _googleSheetController.nameController,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: TextFormField(
+                  controller: _googleSheetController.nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              TextFormField(
+                controller: _googleSheetController.emailController,
                 decoration: const InputDecoration(
-                  labelText: 'Name',
+                  labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
               ),
-            ),
-            TextFormField(
-              controller: _googleSheetController.emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () async {
+                          User user = User(
+                              id: _googleSheetController.idController.text,
+                              name: _googleSheetController.nameController.text,
+                              email:
+                                  _googleSheetController.emailController.text);
+                          if (_googleSheetController.isEdit.value) {
+                            await UserSheetApi.update(
+                                _googleSheetController.idController.text,
+                                user.toJson());
+                          } else {
+                            await UserSheetApi.insert(user.toJson());
+                          }
+                          _googleSheetController.isEdit.value = false;
+                          _googleSheetController.clearData();
+                        },
+                        child: const Text("Save")),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            _googleSheetController.userList?.value =
+                                await UserSheetApi.getAllData();
 
-            /// getdata by specific rownumber
-            // Padding(
-            //   padding: EdgeInsets.symmetric(vertical: 10),
-            //   child: Row(
-            //     mainAxisSize: MainAxisSize.min,
-            //     children: [
-            //       Expanded(
-            //         flex: 4,
-            //         child: TextFormField(
-            //           controller: _googleSheetController.numberController,
-            //           decoration: const InputDecoration(
-            //             isDense: true,
-            //             labelText: 'Row Number',
-            //             border: OutlineInputBorder(),
-            //           ),
-            //         ),
-            //       ),
-            //       const SizedBox(
-            //         width: 10,
-            //       ),
-            //       Expanded(
-            //         flex: 2,
-            //         child: ElevatedButton(
-            //             onPressed: () async {
-            //               List<String>? list = await UserSheetApi.getData(
-            //                   int.parse(_googleSheetController
-            //                       .numberController.text));
-            //
-            //               _googleSheetController.idController.text = list![0];
-            //               _googleSheetController.nameController.text = list[1];
-            //               _googleSheetController.emailController.text = list[2];
-            //             },
-            //             child: const Text("Get by")),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                    onPressed: () async {
-                      User user = User(
-                          id: _googleSheetController.idController.text,
-                          name: _googleSheetController.nameController.text,
-                          email: _googleSheetController.emailController.text);
-                      if (_googleSheetController.isEdit.value) {
-                        await UserSheetApi.update(
-                            _googleSheetController.idController.text,
-                            user.toJson());
-                      } else {
-                        await UserSheetApi.insert(user.toJson());
-                      }
-                      _googleSheetController.isEdit.value = false;
-                      _googleSheetController.clearData();
-                    },
-                    child: const Text("Save")),
-                const SizedBox(
-                  width: 10,
+                            Get.toNamed(Routes.userDataScreen);
+                          },
+                          child: const Text("GetAll")),
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          _googleSheetController.clearData();
+                          _googleSheetController.isEdit.value = false;
+                        },
+                        child: const Text("Add New"))
+                  ],
                 ),
-                ElevatedButton(
-                    onPressed: () async {
-                      _googleSheetController.userList?.value =
-                          await UserSheetApi.getAllData();
-                      print(_googleSheetController.userList);
-                      Get.toNamed(Routes.userDataScreen);
-                    },
-                    child: const Text("GetAll"))
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 }
