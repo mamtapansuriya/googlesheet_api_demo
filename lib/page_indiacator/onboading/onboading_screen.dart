@@ -86,7 +86,8 @@ class OnBoadingScreen extends StatelessWidget {
                     : CustomButton(
                         title: "Next",
                         onTap: () {
-                          Get.toNamed(Routes.homeScreen);
+                          //  Get.toNamed(Routes.homeScreen);
+                          Get.offAllNamed(Routes.settingScreen);
                         },
                         buttonColor: const Color(0xff6FD289),
                         textColor: Colors.white),
